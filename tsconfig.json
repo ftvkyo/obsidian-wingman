@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "module": "ESNext",
+        "target": "ES6",
+        "moduleResolution": "Node",
+
+        "lib": ["ESNext", "DOM"],
+
+        "allowJs": false,
+        "strict": true,
+        "isolatedModules": true,
+        "skipLibCheck": true,
+        "allowSyntheticDefaultImports": true,
+
+        "importHelpers": true,
+        "useDefineForClassFields": true,
+
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "strictNullChecks": true,
+    },
+    "include": [
+        "src",
+    ],
+}

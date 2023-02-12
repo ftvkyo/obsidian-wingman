@@ -1,0 +1,10 @@
+{
+    "id": "obsidian-wingman",
+    "name": "Obsidian Wingman",
+    "version": "0.1.0",
+    "minAppVersion": "1.0.0",
+    "description": "",
+    "author": "ftvkyo",
+    "authorUrl": "https://ftvkyo.me",
+    "isDesktopOnly": true
+}
