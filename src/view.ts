@@ -1,4 +1,4 @@
-import { ItemView, Plugin, WorkspaceLeaf } from "obsidian";
+import { App, ItemView, Plugin, WorkspaceLeaf } from "obsidian";
 
 import WingmanState from "./state";
 
@@ -97,12 +97,12 @@ export default class WingmanView extends ItemView {
      *********************/
 
     // Re-render the view with a state
-    render(state: WingmanState) {
+    update(app: App, state: WingmanState) {
         let container = this.prepareRenderingContainer();
 
         for (let section of state.sections) {
             let sectionElement = container.createEl("section");
-            section.renderTo(state, sectionElement);
+            section.updateTo(app, state, sectionElement);
         }
     }
 }

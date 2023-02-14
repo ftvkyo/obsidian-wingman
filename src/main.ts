@@ -5,7 +5,6 @@ import WingmanState from "./state";
 import WingmanSectionNoteCurrent from "./sections/note-current";
 import WingmanSectionNotesSimilar from "./sections/notes-similar";
 
-
 import "./style.css";
 
 
@@ -50,24 +49,16 @@ export default class MyPlugin extends Plugin {
 
     fileOpen = (file: TFile | null) => {
         this.state.currentNote = file;
-        this.render();
+        this.update();
     }
 
     metadataCacheResolved = () => {
-        // Just here for debuigging purposes, not intended logic
-        if (this.state.currentNote !== null) {
-            this.state.similarNotes.push(this.state.currentNote);
-        }
-        if (this.state.similarNotes.length > 5) {
-            this.state.similarNotes.shift();
-        }
-
-        this.render();
+        this.update();
     }
 
     // View Control
 
-    render() {
-        WingmanView.getView(this)?.render(this.state);
+    update() {
+        WingmanView.getView(this)?.update(this.app, this.state);
     }
 }
