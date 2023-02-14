@@ -4,12 +4,14 @@
     "version": "0.1.0",
     "type": "module",
     "scripts": {
-        "build": "node esbuild.mjs"
+        "build": "node esbuild.mjs",
+        "production": "node esbuild.mjs production"
     },
     "devDependencies": {
         "@tsconfig/node16": "^1.0.3",
         "builtin-modules": "^3.3.0",
         "esbuild": "^0.17.8",
+        "esbuild-plugin-clean": "^1.0.1",
         "esbuild-plugin-copy": "^2.0.2",
         "obsidian": "^1.1.1",
         "tslib": "^2.5.0",

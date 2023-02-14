@@ -1,9 +1,10 @@
 import * as esbuild from "esbuild";
 import { copy } from "esbuild-plugin-copy";
+import { clean } from "esbuild-plugin-clean";
 import builtins from "builtin-modules";
 
 
-const prod = (process.argv[2] === 'production');
+const prod = (process.argv[2] === "production");
 
 
 await esbuild.build({
@@ -20,6 +21,9 @@ await esbuild.build({
     treeShaking: true,
 
     plugins: [
+        clean({
+            patterns: ["./build/*"],
+        }),
         copy({
             assets: {
                 from: "./public/*",
