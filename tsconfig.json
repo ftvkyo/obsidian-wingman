@@ -1,20 +1,12 @@
 {
+	"extends": "@tsconfig/node16/tsconfig.json",
     "compilerOptions": {
-        "module": "ESNext",
-        "target": "ES6",
-        "moduleResolution": "Node",
+        "lib": ["ES2021", "DOM"],
 
-        "lib": ["ESNext", "DOM"],
+		"inlineSourceMap": true,
+		"inlineSources": true,
 
         "allowJs": false,
-        "strict": true,
-        "isolatedModules": true,
-        "skipLibCheck": true,
-        "allowSyntheticDefaultImports": true,
-
-        "importHelpers": true,
-        "useDefineForClassFields": true,
-
         "noImplicitAny": true,
         "noImplicitReturns": true,
         "noUnusedLocals": true,
