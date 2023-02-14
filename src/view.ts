@@ -1,9 +1,5 @@
 import { ItemView, Plugin, WorkspaceLeaf } from "obsidian";
-
-
-export interface WingmanViewState {
-    text: string;
-}
+import WingmanState, { WingmanSection } from "./state";
 
 
 export const VIEW_TYPE_WINGMAN = "wingman-plugin";
@@ -35,12 +31,16 @@ export default class WingmanView extends ItemView {
     }
 
     async onOpen() {
-        this.update({text: ""});
+        // Show a welcome message.
+        let container = this.prepareRenderingContainer();
+        this.renderSection(container, new WingmanSection(
+            -1,
+            "The plugin is ready",
+            "Start editing and suggestions will appear here."
+        ));
     }
 
-    async onClose() {
-        // Nothing to clean up.
-    }
+    async onClose() {}
 
     /***********
      * Helpers *
@@ -83,14 +83,30 @@ export default class WingmanView extends ItemView {
         return leaf?.view as WingmanView | null;
     }
 
-    /*********
-     * State *
-     *********/
-
-    update(state: WingmanViewState) {
-        const container = this.containerEl.children[1];
+    private prepareRenderingContainer(): Element {
+        let container = this.containerEl.children[1];
         container.empty();
-        container.createEl("h4", { text: "Wingman" });
-        container.createEl("p", { text: state.text });
+        container.createEl("h3", { text: "Wingman" });
+        return container;
+    }
+
+    /*********************
+     * Rendering methods *
+     *********************/
+
+    // Re-render the view with a state
+    render(state: WingmanState) {
+        let container = this.prepareRenderingContainer();
+
+        for (let section of state.sections) {
+            this.renderSection(container, section);
+        }
+    }
+
+    // Render a section in the container.
+    private renderSection(container: Element, section: WingmanSection) {
+        let div = container.createDiv("wingman-section");
+        div.createEl("h4", { text: section.title });
+        div.createEl("p", { text: section.content });
     }
 }
