@@ -1,8 +1,13 @@
 import { ItemView, Plugin, WorkspaceLeaf } from "obsidian";
-import WingmanState, { WingmanSection } from "./state";
 
+import WingmanState from "./state";
+
+
+export const HEADING_VIEW = "h4";
+export const HEADING_VIEW_SECTION = "h5";
 
 export const VIEW_TYPE_WINGMAN = "wingman-plugin";
+
 
 export default class WingmanView extends ItemView {
 
@@ -33,11 +38,8 @@ export default class WingmanView extends ItemView {
     async onOpen() {
         // Show a welcome message.
         let container = this.prepareRenderingContainer();
-        this.renderSection(container, new WingmanSection(
-            -1,
-            "The plugin is ready",
-            "Start editing and suggestions will appear here."
-        ));
+        container.createEl("p", { text: "Welcome to Wingman!" });
+        container.createEl("p", { text: "Start editing and see your suggestions here." });
     }
 
     async onClose() {}
@@ -86,7 +88,7 @@ export default class WingmanView extends ItemView {
     private prepareRenderingContainer(): Element {
         let container = this.containerEl.children[1];
         container.empty();
-        container.createEl("h3", { text: "Wingman" });
+        container.createEl(HEADING_VIEW, { text: "Wingman" });
         return container;
     }
 
@@ -99,14 +101,8 @@ export default class WingmanView extends ItemView {
         let container = this.prepareRenderingContainer();
 
         for (let section of state.sections) {
-            this.renderSection(container, section);
+            let sectionElement = container.createEl("section");
+            section.renderTo(state, sectionElement);
         }
-    }
-
-    // Render a section in the container.
-    private renderSection(container: Element, section: WingmanSection) {
-        let div = container.createDiv("wingman-section");
-        div.createEl("h4", { text: section.title });
-        div.createEl("p", { text: section.content });
     }
 }

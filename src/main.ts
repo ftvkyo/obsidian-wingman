@@ -1,17 +1,20 @@
-import { Plugin, TAbstractFile } from "obsidian";
+import { Plugin, TFile } from "obsidian";
 
 import WingmanView from "./view";
 import WingmanState from "./state";
+import WingmanSectionNoteCurrent from "./sections/note-current";
+import WingmanSectionNotesSimilar from "./sections/notes-similar";
+
 
 import "./style.css";
-
-
-const SECTION_SIMILAR_NOTES = 1;
 
 
 export default class MyPlugin extends Plugin {
 
     state = new WingmanState();
+
+    sectionNoteCurrent = new WingmanSectionNoteCurrent();
+    sectionNotesSimilar = new WingmanSectionNotesSimilar();
 
     // Lifecycle
 
@@ -30,17 +33,13 @@ export default class MyPlugin extends Plugin {
             }
         });
 
-        this.registerEvent(this.app.vault.on("create", this.vaultCreate));
-        this.registerEvent(this.app.vault.on("delete", this.vaultDelete));
-        this.registerEvent(this.app.vault.on("rename", this.vaultRename));
-        this.registerEvent(this.app.vault.on("modify", this.vaultModify));
+        this.registerEvent(this.app.workspace.on("file-open", this.fileOpen));
+        this.registerEvent(this.app.metadataCache.on("resolved", this.metadataCacheResolved));
 
-        this.state.sectionAdd({
-            order: SECTION_SIMILAR_NOTES,
-            title: "Similar Notes",
-            content: "No similar notes found.",
-            visible: false,
-        });
+        this.state.sections = [
+            this.sectionNoteCurrent,
+            this.sectionNotesSimilar,
+        ];
     }
 
     onunload() {
@@ -49,30 +48,26 @@ export default class MyPlugin extends Plugin {
 
     // Event Handlers
 
-    vaultCreate = (file: TAbstractFile) => {
-        this.updateSection(SECTION_SIMILAR_NOTES, `Created: ${file.path}`);
+    fileOpen = (file: TFile | null) => {
+        this.state.currentNote = file;
+        this.render();
     }
 
-    vaultDelete = (file: TAbstractFile) => {
-        this.updateSection(SECTION_SIMILAR_NOTES, `Deleted: ${file.path}`);
-    }
+    metadataCacheResolved = () => {
+        // Just here for debuigging purposes, not intended logic
+        if (this.state.currentNote !== null) {
+            this.state.similarNotes.push(this.state.currentNote);
+        }
+        if (this.state.similarNotes.length > 5) {
+            this.state.similarNotes.shift();
+        }
 
-    vaultRename = (file: TAbstractFile, oldPath: string) => {
-        this.updateSection(SECTION_SIMILAR_NOTES, `Renamed: ${oldPath} -> ${file.path}`);
-    }
-
-    vaultModify = (file: TAbstractFile) => {
-        this.updateSection(SECTION_SIMILAR_NOTES, `Modified: ${file.path}`);
+        this.render();
     }
 
     // View Control
 
-    updateSection(sectionOrder: number, text: string) {
-        let section = this.state.sectionGet(sectionOrder);
-        if (section) {
-            section.visible = true;
-            section.content = text;
-        }
+    render() {
         WingmanView.getView(this)?.render(this.state);
     }
 }
