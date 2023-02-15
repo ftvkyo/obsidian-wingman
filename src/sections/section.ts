@@ -14,5 +14,5 @@ export default interface WingmanSection {
         app: App,
         state: WingmanState,
         container: Element,
-    ) => void;
+    ) => Promise<void>;
 }

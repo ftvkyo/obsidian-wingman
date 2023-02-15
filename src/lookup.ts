@@ -50,3 +50,27 @@ export function lookupSimilarNotes(
 
     return similarNotes;
 }
+
+
+// Find the first heading in the note
+export async function getNoteHeading(
+    app: App,
+    note: TFile,
+): Promise<string> {
+    // We need to get the first heading from the note
+    // Only h1 will be taken, and only the first one
+
+    // First, get the content of the note
+    let content = await app.vault.read(note);
+
+    // Now, find the first h1
+    let heading = content.match(/^# (.*)$/m);
+
+    // If there is no h1, return the name of the note
+    if (heading === null) {
+        return note.basename;
+    }
+
+    // Otherwise, return the heading
+    return heading[1];
+}

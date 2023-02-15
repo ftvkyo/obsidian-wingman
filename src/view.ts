@@ -5,6 +5,7 @@ import WingmanState from "./state";
 
 export const HEADING_VIEW = "h4";
 export const HEADING_VIEW_SECTION = "h5";
+export const HEADING_VIEW_SUBSECTION = "h6";
 
 export const VIEW_TYPE_WINGMAN = "wingman-plugin";
 

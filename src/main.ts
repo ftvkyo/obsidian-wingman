@@ -5,8 +5,6 @@ import WingmanState from "./state";
 import WingmanSectionNoteCurrent from "./sections/note-current";
 import WingmanSectionNotesSimilar from "./sections/notes-similar";
 
-import "./style.css";
-
 
 export default class MyPlugin extends Plugin {
 

@@ -1,8 +1,8 @@
 import WingmanState from "../state";
 import WingmanSection from "./section";
-import {HEADING_VIEW_SECTION} from "../view";
+import {HEADING_VIEW_SECTION, HEADING_VIEW_SUBSECTION} from "../view";
 import {App} from "obsidian";
-import {lookupSimilarNotes} from "../lookup";
+import {getNoteHeading, lookupSimilarNotes} from "../lookup";
 
 
 export default class WingmanSectionNotesSimilar implements WingmanSection {
@@ -11,7 +11,7 @@ export default class WingmanSectionNotesSimilar implements WingmanSection {
         return state.currentNote !== null;
     }
 
-    updateTo = (app: App, state: WingmanState, container: Element) => {
+    updateTo = async (app: App, state: WingmanState, container: Element) => {
         container.empty();
 
         container.createEl(HEADING_VIEW_SECTION, { text: "Similar Notes" });
@@ -20,20 +20,36 @@ export default class WingmanSectionNotesSimilar implements WingmanSection {
         if (currentNote) {
             let similarNotes = lookupSimilarNotes(app, currentNote);
 
-            let list = container.createEl("ol");
-            for (let note of similarNotes) {
-                let li = list.createEl("li");
-                li.createEl("a", { text: note.note.basename, href: note.note.path });
+            if (similarNotes.length > 0) {
+                // Helper function to create a new subsection
+                let nextSubsection = (matchingTags: number) => {
+                    container.createEl(HEADING_VIEW_SUBSECTION, { text: `${matchingTags} matching tags` });
+                    let list = container.createEl("ul");
+                    return {
+                        matchingTags,
+                        list,
+                    };
+                };
 
-                let ul = li.createEl("ul");
-                for (let tag of note.matchingTags) {
-                    ul.createEl("li", { text: tag });
+                let currentSection = nextSubsection(similarNotes[0].matchingTags.length);
+
+                // Sort notes out to different sections based on how many tags they have in common with the current note
+                for (let note of similarNotes) {
+                    // When the number of matching tags changes, create a new list
+                    if (note.matchingTags.length < currentSection.matchingTags) {
+                        currentSection = nextSubsection(note.matchingTags.length);
+                    }
+
+                    let li = currentSection.list.createEl("li");
+                    let noteTitle = await getNoteHeading(app, note.note);
+                    li.createEl("a", { text: noteTitle, href: note.note.path });
+                    li.createEl("p", { text: note.matchingTags.join(", ") });
                 }
+
+                return;
             }
-        } else {
-            container.createEl("p", { text: "No similar notes found." });
         }
 
+        container.createEl("p", { text: "No similar notes found." });
     }
-
 }

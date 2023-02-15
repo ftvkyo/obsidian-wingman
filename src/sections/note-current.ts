@@ -2,6 +2,7 @@ import WingmanState from "../state";
 import WingmanSection from "./section";
 import {HEADING_VIEW_SECTION} from "../view";
 import {App} from "obsidian";
+import {getNoteHeading} from "../lookup";
 
 
 export default class WingmanSectionNoteCurrent implements WingmanSection {
@@ -10,13 +11,17 @@ export default class WingmanSectionNoteCurrent implements WingmanSection {
         return state.currentNote !== null;
     }
 
-    updateTo = (_app: App, state: WingmanState, container: Element) => {
+    updateTo = async (app: App, state: WingmanState, container: Element) => {
         container.empty();
 
-        // TODO: Fecth title from the H1
         // TODO: Fetch tags
 
         container.createEl(HEADING_VIEW_SECTION, { text: "Current Note" });
-        container.createEl("p", { text: state.currentNote?.basename ?? "No note selected" });
+        if (state.currentNote) {
+            let title = await getNoteHeading(app, state.currentNote);
+            container.createEl("p", { text: title });
+        } else {
+            container.createEl("p", { text: "No note selected" });
+        }
     }
 }
