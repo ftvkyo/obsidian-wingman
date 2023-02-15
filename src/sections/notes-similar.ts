@@ -42,7 +42,10 @@ export default class WingmanSectionNotesSimilar implements WingmanSection {
 
                     let li = currentSection.list.createEl("li");
                     let noteTitle = await getNoteHeading(app, note.note);
-                    li.createEl("a", { text: noteTitle, href: note.note.path });
+                    let link = li.createEl("a", { text: noteTitle, cls: "internal-link", title: note.note.path });
+                    link.addEventListener("click", async () => {
+                        await app.workspace.getLeaf(false).openFile(note.note);
+                    });
                     li.createEl("p", { text: note.matchingTags.join(", ") });
                 }
 
