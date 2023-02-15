@@ -1,5 +1,10 @@
 import {App, TFile} from "obsidian";
-import {SimilarNote} from "./state";
+
+
+export interface SimilarNote {
+    note: TFile;
+    matchingTags: string[];
+}
 
 
 export function lookupSimilarNotes(
