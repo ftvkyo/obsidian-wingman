@@ -2,20 +2,25 @@ import { Plugin, TFile } from "obsidian";
 
 import WingmanView from "./view";
 import WingmanState from "./state";
+import WingmanSettingsTab from "./settings-tab";
+import {DEFAULT_SETTINGS} from "./settings";
+import WingmanSection from "./sections/section";
 import WingmanSectionNoteCurrent from "./sections/note-current";
 import WingmanSectionNotesSimilar from "./sections/notes-similar";
 
 
-export default class MyPlugin extends Plugin {
+export default class WingmanPlugin extends Plugin {
 
     state = new WingmanState();
+    settings = DEFAULT_SETTINGS;
 
-    sectionNoteCurrent = new WingmanSectionNoteCurrent();
-    sectionNotesSimilar = new WingmanSectionNotesSimilar();
+    sections: WingmanSection[] = [];
 
     // Lifecycle
 
     async onload() {
+        await this.loadSettings();
+
         WingmanView.register(this);
 
         this.app.workspace.onLayoutReady(() => {
@@ -30,17 +35,29 @@ export default class MyPlugin extends Plugin {
             }
         });
 
+        this.addSettingTab(new WingmanSettingsTab(this));
+
         this.registerEvent(this.app.workspace.on("file-open", this.fileOpen));
         this.registerEvent(this.app.metadataCache.on("resolved", this.metadataCacheResolved));
 
-        this.state.sections = [
-            this.sectionNoteCurrent,
-            this.sectionNotesSimilar,
+        this.sections = [
+            new WingmanSectionNoteCurrent(this),
+            new WingmanSectionNotesSimilar(this),
         ];
     }
 
     onunload() {
         WingmanView.remove(this);
+    }
+
+    async loadSettings() {
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+        this.update();
+    }
+
+    async saveSettings() {
+        await this.saveData(this.settings);
+        this.update();
     }
 
     // Event Handlers
@@ -57,6 +74,6 @@ export default class MyPlugin extends Plugin {
     // View Control
 
     update() {
-        WingmanView.getView(this)?.update(this.app, this.state);
+        WingmanView.getView(this)?.update();
     }
 }

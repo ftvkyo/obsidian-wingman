@@ -1,6 +1,6 @@
-import { App, ItemView, Plugin, WorkspaceLeaf } from "obsidian";
+import { ItemView, Plugin, WorkspaceLeaf } from "obsidian";
 
-import WingmanState from "./state";
+import WingmanPlugin from "./main";
 
 
 export const HEADING_VIEW = "h4";
@@ -32,7 +32,10 @@ export default class WingmanView extends ItemView {
      * Lifecycle *
      *************/
 
-    constructor(leaf: WorkspaceLeaf) {
+    constructor(
+        public plugin: WingmanPlugin,
+        leaf: WorkspaceLeaf
+    ) {
         super(leaf);
     }
 
@@ -49,10 +52,10 @@ export default class WingmanView extends ItemView {
      * Helpers *
      ***********/
 
-    static register(plugin: Plugin) {
+    static register(plugin: WingmanPlugin) {
         plugin.registerView(
             VIEW_TYPE_WINGMAN,
-            (leaf) => new WingmanView(leaf)
+            (leaf) => new WingmanView(plugin, leaf)
         );
     }
 
@@ -86,6 +89,10 @@ export default class WingmanView extends ItemView {
         return leaf?.view as WingmanView | null;
     }
 
+    /*********************
+     * Rendering methods *
+     *********************/
+
     private prepareRenderingContainer(): Element {
         let container = this.containerEl.children[1];
         container.empty();
@@ -93,17 +100,14 @@ export default class WingmanView extends ItemView {
         return container;
     }
 
-    /*********************
-     * Rendering methods *
-     *********************/
-
     // Re-render the view with a state
-    update(app: App, state: WingmanState) {
+    update() {
         let container = this.prepareRenderingContainer();
 
-        for (let section of state.sections) {
-            let sectionElement = container.createEl("section");
-            section.updateTo(app, state, sectionElement);
+        for (let section of this.plugin.sections) {
+            if (section.shouldRender()) {
+                section.updateTo(container.createEl("section"));
+            }
         }
     }
 }

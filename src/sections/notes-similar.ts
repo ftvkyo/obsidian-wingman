@@ -1,22 +1,26 @@
-import WingmanState from "../state";
 import WingmanSection from "./section";
 import {HEADING_VIEW_SECTION, HEADING_VIEW_SUBSECTION} from "../view";
-import {App} from "obsidian";
 import {getNoteHeading, lookupSimilarNotes} from "../lookup";
+import WingmanPlugin from "../main";
 
 
 export default class WingmanSectionNotesSimilar implements WingmanSection {
+    constructor(
+        public plugin: WingmanPlugin,
+    ) {}
 
-    shouldRender = (_app: App, state: WingmanState) => {
-        return state.currentNote !== null;
+    shouldRender = () => {
+        let sectionEnabled = this.plugin.settings.sectionNotesSimilarEnabled;
+        let currentNoteExists = this.plugin.state.currentNote !== null;
+        return sectionEnabled && currentNoteExists;
     }
 
-    updateTo = async (app: App, state: WingmanState, container: Element) => {
+    updateTo = async (container: Element) => {
         container.empty();
 
         container.createEl(HEADING_VIEW_SECTION, { text: "Similar Notes" });
 
-        let currentNote = state.currentNote;
+        let currentNote = this.plugin.state.currentNote;
         if (currentNote) {
             let similarNotes = lookupSimilarNotes(app, currentNote);
 

@@ -1,24 +1,28 @@
-import WingmanState from "../state";
 import WingmanSection from "./section";
 import {HEADING_VIEW_SECTION} from "../view";
-import {App} from "obsidian";
 import {getNoteHeading} from "../lookup";
+import WingmanPlugin from "../main";
 
 
 export default class WingmanSectionNoteCurrent implements WingmanSection {
+    constructor(
+        public plugin: WingmanPlugin,
+    ) {}
 
-    shouldRender = (_app: App, state: WingmanState) => {
-        return state.currentNote !== null;
+    shouldRender = () => {
+        let sectionEnabled = this.plugin.settings.sectionNoteCurrentEnabled;
+        let currentNoteExists = this.plugin.state.currentNote !== null;
+        return sectionEnabled && currentNoteExists;
     }
 
-    updateTo = async (app: App, state: WingmanState, container: Element) => {
+    updateTo = async (container: Element) => {
         container.empty();
 
         // TODO: Fetch tags
 
         container.createEl(HEADING_VIEW_SECTION, { text: "Current Note" });
-        if (state.currentNote) {
-            let title = await getNoteHeading(app, state.currentNote);
+        if (this.plugin.state.currentNote) {
+            let title = await getNoteHeading(app, this.plugin.state.currentNote);
             container.createEl("p", { text: title });
         } else {
             container.createEl("p", { text: "No note selected" });

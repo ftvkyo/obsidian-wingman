@@ -1,18 +1,12 @@
-import {App} from "obsidian";
-import WingmanState from "../state";
+import WingmanPlugin from "../main";
 
 
 export default interface WingmanSection {
+    plugin: WingmanPlugin;
+
     // Whether the section should be rendered.
-    shouldRender: (
-        app: App,
-        state: WingmanState,
-    ) => boolean;
+    shouldRender: () => boolean;
 
     // Render the section to an element.
-    updateTo: (
-        app: App,
-        state: WingmanState,
-        container: Element,
-    ) => Promise<void>;
+    updateTo: (container: Element) => Promise<void>;
 }
