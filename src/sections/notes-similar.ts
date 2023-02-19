@@ -50,7 +50,14 @@ export default class WingmanSectionNotesSimilar implements WingmanSection {
                     link.addEventListener("click", async () => {
                         await app.workspace.getLeaf(false).openFile(note.note);
                     });
-                    li.createEl("p", { text: note.matchingTags.join(", ") });
+
+                    let tags = note.tags.map((tag) => {
+                        if (note.matchingTags.includes(tag)) {
+                            return `<strong>${tag}</strong>`;
+                        }
+                        return tag;
+                    }).join(", ");
+                    li.createEl("p").innerHTML = tags;
                 }
 
                 return;

@@ -3,6 +3,7 @@ import {App, TFile} from "obsidian";
 
 export interface SimilarNote {
     note: TFile;
+    tags: string[];
     matchingTags: string[];
 }
 
@@ -38,6 +39,7 @@ export function lookupSimilarNotes(
 
         return {
             note,
+            tags,
             matchingTags,
         };
     })
